@@ -16,17 +16,19 @@ int main(int argc, char** argv) {
     fp = fopen(filename, "r");
 
     while(fgets(buff, 10, fp)) {
-        printf("%s", buff);
-        if (!strcmp(buff, "\n")) {
-            if (tally > top3[0]) top3[0] = tally;
-            qsort(top3, 3, sizeof(int), cmpfunc);
-            tally = 0;
-        } else {
+        if (strcmp(buff, "\n")) {
             tally += atoi(buff);
+        } else {
+            if (tally > top3[0]){ 
+                top3[0] = tally;
+                qsort(top3, 3, sizeof(int), cmpfunc);
+            }
+            tally = 0;
         }
     }
 
     int sum = top3[0] + top3[1] + top3[2];
-    printf("The biggest number of calories is... %d.\n", sum);
+    printf("%d.\n", sum);
+
     return 0;
 }

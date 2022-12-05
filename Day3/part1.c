@@ -4,10 +4,6 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-int cmp(const void *a, const void *b) {
-   return (int)(*(char*)a - *(char*)b);
-}
-
 int main(int argc, char** argv) {
     char buff[70];
     const char* filename = argv[1];

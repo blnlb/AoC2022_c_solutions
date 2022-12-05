@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "ctype.h": "c"
+        "ctype.h": "c",
+        "stack.h": "c",
+        "string.h": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "complex": "cpp",
+        "__locale": "cpp"
     }
 }

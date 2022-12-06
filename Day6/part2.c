@@ -1,5 +1,4 @@
 #include <string.h>
-#include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -31,12 +30,13 @@ int main(int argc, char** argv) {
                 }
                 if (j == DISTINCT_CHAR - 2 && k == DISTINCT_CHAR - 1) {
                     printf("%d\n", i + DISTINCT_CHAR);
+                    fclose(fp); free(window); free(buff);
                     return 0;
                 }
             }
         }
     }
-
+    fclose(fp); free(window); free(buff);
     printf("No message found.\n");
     return -1;
 }

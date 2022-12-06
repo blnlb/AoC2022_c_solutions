@@ -1,8 +1,6 @@
 #include <string.h>
-#include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdbool.h>
 
 #define MAXCHARS 4100
 
@@ -14,7 +12,7 @@ int main(int argc, char** argv) {
 
     int i = 0;
     char* window = malloc(5);
-    for (i; i < MAXCHARS;) {
+    for (;i < MAXCHARS;) {
         strncpy(window, buff + i, 4);
         if (!strncmp(window, window + 1, 1) ||
             !strncmp(window, window + 2, 1) ||
@@ -27,7 +25,7 @@ int main(int argc, char** argv) {
             break;
         }
     }
-
-
+    fclose(fp);
+    free(window); free(buff);
     return 0;
 }

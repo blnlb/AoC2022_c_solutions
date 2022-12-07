@@ -28,5 +28,7 @@ int main(int argc, char** argv) {
     }
 
     printf("%d\n", howmany);
+    fclose(fp);
+    free(mid); free(range1); free(range2);
     return 0;
 }

@@ -14,17 +14,18 @@ struct node {
 typedef struct node nod;
 
 nod *createNode(int);
+void deleteNode(nod*);
 int createTree(nod*, FILE **fp);
 int navigate(nod*);
 
 int main(int argc, char** argv) {
-    const char *filename = argv[1];
-    FILE *fp = fopen(filename, "r");
+    FILE *fp = fopen(argv[1], "r");
 
-    // I think first I need to create the structure,
+    // First I need to create the structure,
     // then navigate it recursively to store the sums.
     nod *root = createNode(0);
     int rootSum = createTree(root, &fp);
+    fclose(fp);
 
     // Now that we have a large tree, we need to go back through
     // and check the sum on our condition
@@ -32,6 +33,7 @@ int main(int argc, char** argv) {
     printf("%d\n", sum);
 
     // wow I cannot believe that worked.
+    deleteNode(root);
     return 0;
 }
 
@@ -47,7 +49,7 @@ int createTree(nod* root, FILE **fp) {
     char *buff = malloc(30);
     while(fgets(buff, 30, *fp)) {
         if (!strncmp(buff, "$ cd", 3)) {
-            if (!strncmp(buff + 5, "..", 2)) return root->sum;
+            if (!strncmp(buff + 5, "..", 2)) break;
             root->children[root->numChildren] = createNode(0);
             root->sum += createTree(root->children[(root->numChildren)++], fp);
         } else if (isdigit(buff[0])) {
@@ -58,6 +60,7 @@ int createTree(nod* root, FILE **fp) {
             continue;
         } 
     }
+    free(buff);
     return root->sum;
 }
 
@@ -68,4 +71,11 @@ int navigate(nod* root) {
         tally += navigate((root->children)[i]);
     }
     return tally;
+}
+
+void deleteNode(nod* root) {
+    for (int i = 0; i < root->numChildren; ++i) {
+        deleteNode(root->children[i]);
+    }
+    free(root);
 }

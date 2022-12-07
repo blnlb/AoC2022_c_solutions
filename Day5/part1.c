@@ -1,5 +1,5 @@
 #include "stack.h"
-#include "utility.h"
+#include "../headers/utility.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -28,12 +28,13 @@ int main(int argc, char** argv) {
     const char* filename = argv[1];
     FILE *fp = fopen(filename, "r");
     
-    // INITIALIZE AREA* ** * * * * * * * * * * * * * 
+    // INITIALIZE AREA* * * * * * * * * * * * * * * * 
     // Pre-logic area
     int numStacks = 9;
     bool pastCrates = false, oneMore = false;
     char *curr = malloc(5);
     curr[4] = '\0';
+    int i;
 
     // Now we read the logic into these variables
     int *directions = calloc(3, sizeof(int));
@@ -46,7 +47,7 @@ int main(int argc, char** argv) {
     // START ************************************
     //Create an array of STACKS!
     st **s = calloc(numStacks, sizeof(st*));
-    for (int i = 0; i < numStacks; ++i) {
+    for (i = 0; i < numStacks; ++i) {
         s[i] = malloc(sizeof(st));
         s[i] = initStack();
     }
@@ -78,17 +79,21 @@ int main(int argc, char** argv) {
             continue;
         }  
             directions = collectDigits(buff, 3);
-            for (int i = 0; i < directions[0]; ++i) {
+            for (i = 0; i < directions[0]; ++i) {
                 push(s[directions[2]-1], pop(s[directions[1]-1]));
             }
         }
     }
 
-    for (int i = 0; i < numStacks; ++i) {
+    for (i = 0; i < numStacks; ++i) {
         final[i] = pop(s[i]);
     }
 
     printf("%s\n", final);
-
+    fclose(fp);
+    free(final); free(directions); free(curr);
+    for (i = 0; i < numStacks; ++i) {
+        free(s[i]);
+    } free(s);
     return 0;
 }

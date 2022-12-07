@@ -1,5 +1,5 @@
 #include "stack.h"
-#include "utility.h"
+#include "../headers/utility.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -37,9 +37,10 @@ int main(int argc, char** argv) {
 
     char* final = malloc(numStacks+1);
     final[numStacks] = '\0';
+    int i;
 
     st **s = calloc(numStacks, sizeof(st*));
-    for (int i = 0; i < numStacks; ++i) {
+    for (i = 0; i < numStacks; ++i) {
         s[i] = malloc(sizeof(st));
         s[i] = initStack();
     }
@@ -72,20 +73,24 @@ int main(int argc, char** argv) {
         }  
             directions = collectDigits(buff, 3);
             // We're just using a completely different stack in the interim
-            for (int i = 0; i < directions[0]; ++i) {
+            for (i = 0; i < directions[0]; ++i) {
                 push(midStack, pop(s[directions[1]-1]));
             }
-            for (int i = 0; i < directions[0]; ++i) {
+            for (i = 0; i < directions[0]; ++i) {
                 push(s[directions[2] - 1], pop(midStack));
             }
         }
     }
 
-    for (int i = 0; i < numStacks; ++i) {
+    for (i = 0; i < numStacks; ++i) {
         final[i] = pop(s[i]);
     }
 
     printf("%s\n", final);
-
+    fclose(fp);
+    free(final); free(directions); free(curr); free(midStack);
+    for (i = 0; i < numStacks; ++i) {
+        free(s[i]);
+    } free(s);
     return 0;
 }

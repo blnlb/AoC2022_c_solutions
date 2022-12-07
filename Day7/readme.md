@@ -15,13 +15,17 @@ and the accompanying `nod *createNode(int)` and `void deleteNode(nod*)` function
 ## Example Output and Time with `input.txt`
 I tracked how long the total program takes before and after freeing the memory associated with the tree. One caveat here is of course that part of the second invocation calculates how long the program, the cleanup, and _the first invocation_ take together. Oh well. It's consistent across both programs.
 ### Part 1
-```919137
+```
+919137
 Duration of program, pre-cleanup: 0.191000 ms
-Duration of program, post-cleanup: 0.198000 ms```
+Duration of program, post-cleanup: 0.198000 ms
+```
 ### Part 2
-```@ Best candidate is of size: 2877389 <--------
+```
+@ Best candidate is of size: 2877389 <--------
 Duration of program, pre-cleanup: 0.196000 ms
-Duration of program, pre-cleanup: 0.204000 ms```
+Duration of program, pre-cleanup: 0.204000 ms
+```
 
 ## Time Complexity
 ### Part 1

@@ -6,6 +6,8 @@
         "stdio.h": "c",
         "stdlib.h": "c",
         "complex": "cpp",
-        "__locale": "cpp"
+        "__locale": "cpp",
+        "utility.h": "c",
+        "functional": "c"
     }
 }

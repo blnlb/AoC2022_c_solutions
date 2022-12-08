@@ -13,7 +13,7 @@ struct node {
 } node;
 typedef struct node nod;
 
-nod *createNode(int);
+node *createNode(int);
 void deleteNode(nod*);
 int createTree(nod*, FILE **fp);
 int navigate(nod*);

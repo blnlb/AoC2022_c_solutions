@@ -8,6 +8,7 @@
         "complex": "cpp",
         "__locale": "cpp",
         "utility.h": "c",
-        "functional": "c"
+        "functional": "c",
+        "stdbool.h": "c"
     }
 }

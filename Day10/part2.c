@@ -4,10 +4,6 @@
 #include <ctype.h>
 #include "../headers/utility.h"
 
-#define CRT_WIDTH 240
-
-
-void checkCycle(int reg, int cycle, int *toCheck, int* nums, int *ind);
 void drawPixel(int*, int, int);
 
 int main(int argc, char** argv) {
@@ -35,13 +31,15 @@ int main(int argc, char** argv) {
             reg += convertToNumber(buff, len);
         }
     }
+    fclose(fp);
 
     for (int i = 0; i < 6; ++i) {
         for (int j = 0; j < 40; ++j) {
-            printf("%c", (crt[j + i*40] == 1) ? '#' : '.');
+            printf("%c", (crt[j + i*40] == 1) ? '#' : ' ');
         }
         printf("\n");
     }
+    free(crt);
     return 0;
 }
 

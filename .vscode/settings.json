@@ -9,6 +9,7 @@
         "__locale": "cpp",
         "utility.h": "c",
         "functional": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "limits.h": "c"
     }
 }

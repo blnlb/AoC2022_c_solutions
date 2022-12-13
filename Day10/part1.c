@@ -17,7 +17,6 @@ int main(int argc, char** argv) {
     int *allSums = calloc(100, sizeof(int));
     int stopAndCheck[6] = {20, 60, 100, 140, 180, 220};
     int allSumsIndex = 0;
-    printf("Cycle #\t\t Register\n");
     while(fgets(buff, 11, fp)) {
         if (!strncmp(buff, "n", 1)) {
             checkCycle(reg, cycle, stopAndCheck, allSums, &allSumsIndex);
@@ -38,10 +37,14 @@ int main(int argc, char** argv) {
             ++cycle;
         }
     }
+    fclose(fp);
+
     int sum = 0;
     for (int i = 0; i < 6; ++i) {
         sum += allSums[i];
     }
+
+    free(allSums);
 
     printf("%d\n", sum);
     return 0;
@@ -54,5 +57,4 @@ void checkCycle(int reg, int cycle, int* toCheck, int* nums, int *ind) {
             break;
         } 
     }
-    printf("%d\t\t%d\n", cycle, reg);
 }

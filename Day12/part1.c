@@ -3,6 +3,7 @@
 #include <string.h>
 #include <limits.h>
 #include "grid.c"
+#include "priorityQueue.h"
 
  
 int main(int argc, char** argv) {
@@ -32,10 +33,11 @@ int main(int argc, char** argv) {
     }
     fclose(fp);
 
-    while (sizeof(map->visited) != map->)
-    int shortest = countSteps(map, start[0], start[1], end[0], end[1], 0);
-
-    printf("%d\n", shortest);
+    int *pqueue = calloc(100, sizeof(int));
+    createNode(map->elevation[start[0]][start[1]]);
+    int size = 0;
+    penqueue(pqueue, map->elevation[start[0]][start[1]], &size);
+    
 
     return 0;
 }

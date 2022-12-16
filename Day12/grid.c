@@ -47,7 +47,7 @@ int testDirection(grid *map, int x, int y, int endx, int endy, int lastEl, int n
 int countSteps(grid* map, int x, int y, int endx, int endy, int numSteps) {
     if (x == endx && y == endy) return numSteps;
     map->visited[x][y] = true;
-    int currEl = map->elevation[x][y]; 
+    int currEl = map->elevation[x][y];
     int t0, t1, t2, t3;
     // look at every direction
     t0 = testDirection(map, x+1, y, endx, endy, currEl, numSteps);

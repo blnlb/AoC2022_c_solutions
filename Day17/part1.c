@@ -8,6 +8,8 @@
 #define MAX(A,B) ((A) ^ ((A ^ B) & -(A < B)))
 
 #define COLUMNWIDTH 7
+#define SNAPSHOTSIZE 30
+#define PART2 1
 
 typedef struct map {
     char **coordinate;
@@ -15,12 +17,18 @@ typedef struct map {
     long highestRock;
 } map;
 
-map* createMap() {
+typedef struct state {
+    map* currMap;
+    char *direction;
+    int currentShape;
+} state;
+
+map* createMap(int size, int high, int low) {
     map* result = calloc(1, sizeof(map));
-    result->lowestRock = 0;
-    result->highestRock = 0;
-    result->coordinate = calloc(2000000, sizeof(char*));
-    for (int i = 0; i < 2000000; ++i) {
+    result->lowestRock = low;
+    result->highestRock = high;
+    result->coordinate = calloc(size, sizeof(char*));
+    for (int i = 0; i < size; ++i) {
         result->coordinate[i] = malloc(COLUMNWIDTH + 1);
         for (int j = 0; j < COLUMNWIDTH; ++j) {
             result->coordinate[i][j] = ' ';
@@ -28,6 +36,16 @@ map* createMap() {
             result->coordinate[i][COLUMNWIDTH] = '\0';
     }
     strcpy(result->coordinate[0], "#######\0");
+    return result;
+}
+
+state *createState(map* currMap, char *direction, int t) {
+    state *result = calloc(1, sizeof(state));
+    result->currMap = createMap(SNAPSHOTSIZE, currMap->highestRock, currMap->lowestRock);
+    memcpy(result->currMap, currMap, SNAPSHOTSIZE);
+    result->direction = malloc(strlen(direction) + 1);
+    memcpy(result->direction, direction, strlen(direction));
+    result->currentShape = t;
     return result;
 }
 
@@ -78,6 +96,30 @@ char **buildNewRock(int index, int *total, int *width) {
     return result;
 }
 
+// signature checks last SNAPSHOTSIZE squares
+state * signature(map* currMap, char *direction, int t) {
+    int ymax = currMap->highestRock;
+    int check = MAX(0, ymax-SNAPSHOTSIZE-20);
+    if (check == 0) return NULL;
+    state *result = createState(currMap, direction, t);
+    return result;
+}
+
+state * seen(state **allSignatures, int sigLength, state* curr) {
+    for (int i = 0; i < sigLength; ++i) {
+        if (curr->currentShape % 5 != allSignatures[i]->currentShape % 5 ||
+            strcmp(curr->direction, allSignatures[i]->direction)) {
+            continue;
+        }
+        for (int j = 0; j < 30; j++) {
+            if (strncmp(curr->currMap->coordinate[j], allSignatures[i]->currMap->coordinate[j], 7))
+                break;
+            if (j == 29) return allSignatures[i];
+        }
+    }
+    return NULL;
+}
+
 int main(int argc, char **argv) {
     char *filename = argv[1] ? argv[1] : "input.txt";
     FILE *fp = fopen(filename, "r");
@@ -93,10 +135,10 @@ int main(int argc, char **argv) {
 
     //build map to fall from. Our falling will go from bottom to top,
     // so that the floor is at y = 0
-    map* vent = createMap();
+    map* vent = createMap(2000000, 0, 4);
 
     // will need to track several branches using booleans
-    bool rockFalling = false, touchingWall, isNewFloor = false;
+    bool rockFalling = false, touchingWall;
     int i = 0, j, k;
     int totalColumns = 1;
     long total = 0;
@@ -107,22 +149,23 @@ int main(int argc, char **argv) {
     int neg = 1;
 
     // PART 2 CAVEATS
+    bool jumpedAhead = false;
     long offset = 0;
     int width;
+    state ** signatures = calloc(20000, sizeof(state*));
+    state *sig = calloc(1, sizeof(state)), *found = calloc(1, sizeof(state));
+    int signaturesLength = 0;
+    long added = 0;
 
     // GAME LOOP
     long maxLoopage = 1000000000000;
-    long stop = totalDirectionCount*5;
-    while (total < stop) {
+    while (total < maxLoopage) {
         touchingWall = false;
         if (*direction == '\n') {
             direction -= totalDirectionCount;
         } 
         // If there is no rock falling, let's create a new rock and update some values
         if (!rockFalling) {
-            ++total; 
-            vent->highestRock = MAX(vent->lowestRock + totalColumns - 1, vent->highestRock);
-            vent->lowestRock = vent->highestRock + 4;
             currRock = buildNewRock(i++, &totalColumns, &width);
             i %= 5;
             rockFalling = true;
@@ -181,6 +224,7 @@ int main(int argc, char **argv) {
                 }
             }
         }
+        // have we landed on a rock yet?
         if (vent->lowestRock <= vent->highestRock + 1) {
             for (j = 0; j < totalColumns; ++j) {
                 for (k = 0; k < COLUMNWIDTH; ++k) {
@@ -193,9 +237,11 @@ int main(int argc, char **argv) {
             }
         }   
 
+        // condition 1: keep falling.
         if (rockFalling) {
             --(vent->lowestRock);
         }
+        // condition 2: drop the rock and move on
         else {
             for (j = 0; j < totalColumns; ++j) {
                 for (int k = 0; k < COLUMNWIDTH; ++k) {
@@ -203,11 +249,37 @@ int main(int argc, char **argv) {
                         vent->coordinate[vent->lowestRock + j][k] = '#';
                 }
             }
+            // calculate new rock total, highest rock, and where the next rock will fall from
+            ++total; 
+            vent->highestRock = MAX(vent->lowestRock + totalColumns - 1, vent->highestRock);
+            vent->lowestRock = vent->highestRock + 4;
+
+            if (!jumpedAhead) {
+                state *sig = signature(vent, direction, total);
+                if (sig) {
+                    if ((found = seen(signatures, signaturesLength, sig))) {
+                        int dy = vent->highestRock - found->currMap->highestRock;
+                        long dt = total - found->currentShape;
+                        long amt = (maxLoopage - total)/dt;
+                        added = amt * (long)dy;
+                        total += amt*dt;
+                        printf("This is the total after jumping: %ld\n", total);
+                        jumpedAhead = true;
+                        for (j = 0; j < signaturesLength; ++j) {
+                            free(signatures[j]->currMap);
+                            free(signatures[j]);
+                        }
+                    }
+                    else {
+                        signatures[signaturesLength++] = sig;
+                    }
+                }
+            }
         }
         ++direction;
     }
 
-    printf("%ld\n", (long)(vent->highestRock * maxLoopage/(float)total));
+    printf("vent got to : %ld\nwe added: %ld\nfinal: %ld\n", (vent->highestRock), added, (vent->highestRock) + added);
 
     return 0;
 }

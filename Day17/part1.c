@@ -99,7 +99,7 @@ char **buildNewRock(int index, int *total, int *width) {
 // signature checks last SNAPSHOTSIZE squares
 state * signature(map* currMap, char *direction, int t) {
     int ymax = currMap->highestRock;
-    int check = MAX(0, ymax-SNAPSHOTSIZE-20);
+    int check = MAX(0, ymax-SNAPSHOTSIZE-15);
     if (check == 0) return NULL;
     state *result = createState(currMap, direction, t);
     return result;
@@ -111,7 +111,7 @@ state * seen(state **allSignatures, int sigLength, state* curr) {
             strcmp(curr->direction, allSignatures[i]->direction)) {
             continue;
         }
-        for (int j = 0; j < 30; j++) {
+        for (int j = 0; j < SNAPSHOTSIZE; j++) {
             if (strncmp(curr->currMap->coordinate[j], allSignatures[i]->currMap->coordinate[j], 7))
                 break;
             if (j == 29) return allSignatures[i];
@@ -251,7 +251,7 @@ int main(int argc, char **argv) {
             }
             // calculate new rock total, highest rock, and where the next rock will fall from
             ++total; 
-            vent->highestRock = MAX(vent->lowestRock + totalColumns - 1, vent->highestRock);
+            vent->highestRock = MAX(vent->highestRock, vent->lowestRock + totalColumns - 1);
             vent->lowestRock = vent->highestRock + 4;
 
             if (!jumpedAhead) {
@@ -261,7 +261,7 @@ int main(int argc, char **argv) {
                         int dy = vent->highestRock - found->currMap->highestRock;
                         long dt = total - found->currentShape;
                         long amt = (maxLoopage - total)/dt;
-                        added = amt * (long)dy;
+                        added += amt * (long)dy;
                         total += amt*dt;
                         printf("This is the total after jumping: %ld\n", total);
                         jumpedAhead = true;
